@@ -2337,6 +2337,11 @@ id __LNPopupEmptyBlurFilter(void)
 				self.popupContentView.popupInteractionGestureRecognizer = nil;
 				_popupContentView = nil;
 				
+				//The bar and content are gone: mark the popup hidden before anything below can trigger a layout (the insets
+				//update, the dismissal delegate or a completion block calling setNavigationBarHidden:animated:). Layout
+				//while still transitioning would recreate the content view and insert it, empty, over the container.
+				_popupControllerInternalState = LNPopupPresentationStateBarHidden;
+				
 				_LNPopupSupportSetPopupInsetsForViewController(_containerController, self.popupBar, YES, UIEdgeInsetsZero);
 				
 				_currentContentController = nil;
@@ -2351,8 +2356,6 @@ id __LNPopupEmptyBlurFilter(void)
 				self.bottomBar = nil;
 				
 				[self _end120HzHack];
-				
-				_popupControllerInternalState = LNPopupPresentationStateBarHidden;
 				
 				if(@available(iOS 17.0, *))
 				{
