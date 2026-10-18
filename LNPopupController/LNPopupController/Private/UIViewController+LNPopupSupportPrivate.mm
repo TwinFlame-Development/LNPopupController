@@ -915,8 +915,23 @@ void __LNViewControllerCopySystemSafeAreaGeometry(UIViewController* source, UIVi
 	return [self _vCUSB];
 }
 
+//Layout of the popup bar and content views is only meaningful while a popup bar is presented (or being presented or dismissed).
+//Once dismissed, the popup controller lazily recreates its bar and content view on access; laying out then (for example from
+//`setNavigationBarHidden:animated:`) would insert a fresh, empty, full-size popup content view above the container's content,
+//blocking interaction with only its close button visible.
+- (BOOL)_ln_hasPopupToLayout
+{
+	LNPopupController* popupController = self._ln_popupController_nocreate;
+	return popupController != nil && popupController.popupControllerInternalState != LNPopupPresentationStateBarHidden;
+}
+
 - (void)_layoutPopupBarOrderForTransition
 {
+	if(self._ln_hasPopupToLayout == NO)
+	{
+		return;
+	}
+	
 	[self._ln_popupController_nocreate.popupBar.superview insertSubview:self._ln_popupController_nocreate.popupBar aboveSubview:self.bottomDockingViewForPopup_internalOrDeveloper];
 	[self._ln_popupController_nocreate.popupBar.superview insertSubview:self._ln_bottomBarExtension_nocreate belowSubview:self.bottomDockingViewForPopup_internalOrDeveloper];
 	
@@ -927,6 +942,11 @@ void __LNViewControllerCopySystemSafeAreaGeometry(UIViewController* source, UIVi
 
 - (void)_layoutPopupBarOrderForUse
 {
+	if(self._ln_hasPopupToLayout == NO)
+	{
+		return;
+	}
+	
 	UIView* bottomBar = self.bottomDockingViewForPopup_internalOrDeveloper;
 	LNPopupBar* popupBar = self._ln_popupController_nocreate.popupBar;
 	UIView* parentForPopupBar = bottomBar.superview != nil ? bottomBar.superview : self.view;
@@ -1409,6 +1429,11 @@ static void* LNTabBarControllerWantsForcedAnimatedPopupBarLayout = &LNTabBarCont
 
 - (void)_layoutPopupBarOrderForTransition
 {
+	if(self._ln_hasPopupToLayout == NO)
+	{
+		return;
+	}
+	
 	if(self.bottomDockingViewForPopupBar != nil)
 	{
 		//Custom bottom docking view, ignore.
@@ -1430,6 +1455,11 @@ static void* LNTabBarControllerWantsForcedAnimatedPopupBarLayout = &LNTabBarCont
 
 - (void)_layoutPopupBarOrderForUse
 {
+	if(self._ln_hasPopupToLayout == NO)
+	{
+		return;
+	}
+	
 	if(self.bottomDockingViewForPopupBar != nil)
 	{
 		//Custom bottom docking view, ignore.
@@ -2473,6 +2503,11 @@ static void* LNTabBarControllerWantsForcedAnimatedPopupBarLayout = &LNTabBarCont
 
 - (void)_layoutPopupBarOrderForTransition
 {
+	if(self._ln_hasPopupToLayout == NO)
+	{
+		return;
+	}
+	
 	if(self.bottomDockingViewForPopupBar != nil)
 	{
 		//Custom bottom docking view, ignore.
@@ -2493,6 +2528,11 @@ static void* LNTabBarControllerWantsForcedAnimatedPopupBarLayout = &LNTabBarCont
 
 - (void)_layoutPopupBarOrderForUse
 {
+	if(self._ln_hasPopupToLayout == NO)
+	{
+		return;
+	}
+	
 	if(self.bottomDockingViewForPopupBar != nil)
 	{
 		//Custom bottom docking view, ignore.
@@ -3210,6 +3250,11 @@ static void* wrapperDelegateKey = &wrapperDelegateKey;
 
 - (void)_layoutPopupBarOrderForUse
 {
+	if(self._ln_hasPopupToLayout == NO)
+	{
+		return;
+	}
+	
 	[super _layoutPopupBarOrderForUse];
 	
 	if(@available(iOS 14.0, *))
@@ -3220,6 +3265,11 @@ static void* wrapperDelegateKey = &wrapperDelegateKey;
 
 - (void)_layoutPopupBarOrderForTransition
 {
+	if(self._ln_hasPopupToLayout == NO)
+	{
+		return;
+	}
+	
 	[super _layoutPopupBarOrderForTransition];
 	
 	if(@available(iOS 14.0, *))

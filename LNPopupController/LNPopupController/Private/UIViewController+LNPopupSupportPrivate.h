@@ -115,6 +115,7 @@ void __LNPopupUpdateChildInsets(__kindof UIViewController* controller);
 - (nullable UIViewController*)_ln_childViewControllerForStatusBarLogic __attribute__((objc_direct));
 
 - (void)_layoutPopupBarOrderForUse;
+- (BOOL)_ln_hasPopupToLayout;
 
 - (void)_ln_updatePopupBarContainerInsets;
 - (void)_ln_layoutPopupBarAndContent;
